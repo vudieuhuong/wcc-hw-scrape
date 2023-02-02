@@ -1,9 +1,9 @@
 const https = require('https');
 const JSSoup = require('jssoup').default;
 const fs = require('fs');
-const url = "https://en.wikipedia.org/wiki/Brain_in_a_vat"; // FIRST: find a url of a page you are interested in from wikipedia 
+const url = "https://vi.wikipedia.org/wiki/Kem_l%E1%BA%A1nh"; // FIRST: find a url of a page you are interested in from wikipedia 
 const jsonPath = "./json/"; 
-const name = "Brain in a Vat";
+const name = "Ice Cream";
 
 /*
 This web-scraping example is set up for working with wikipedia.If you want to adapt this
@@ -13,16 +13,16 @@ to scrape another site you should go and inspect the site in the browser first, 
 //returns one large string of all text
 function getParagraphText(soupTag){
     let paragraphs = soupTag.findAll('p');
-    let text = "";
+    let text = '';
+
     for(let i = 0; i < paragraphs.length; i++){
         let p = paragraphs[i].getText().toLowerCase();
-
-        if (p.indexOf("vat") != -1){
+        // text += p;
+        if (p.indexOf("tuyết cao") != -1){
             text += p;
             // console.log(p);
         } 
     }
-
     return text;
 }
 
@@ -42,26 +42,27 @@ function createSoup(document){
     
     // create soup
     let soup = new JSSoup(document);
-    let data = {
-        "name": name,
-        "url": url,
-        "text": getParagraphText(bodyContent)
-    }; 
 
     let main = soup.find('main');//only get the content from the main body of the page
     // console.log(main);
     let bodyContent = soup.find('div', {id: "bodyContent"});
     // console.log(bodyContent);
 
-    console.log(getParagraphText(bodyContent));
+    let data = {
+        "name": name,
+        "url": url,
+        "content": {}
+    }; 
+
+    // console.log(getParagraphText(bodyContent));
 
     data.content = {
         "text": getParagraphText(main)
+       
     };
         
-    // //output json
+    //output json
     writeJSON(data);
-
 }
 
 //Request the url
@@ -77,7 +78,7 @@ https.get(url, (res) => {
         document = Buffer.concat(document).toString();
         // console.log(document);
 
-        // createSoup(document);
+        createSoup(document);
     });
 
 }).on('error', (e) => {
